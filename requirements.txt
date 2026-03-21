@@ -1,0 +1,29 @@
+# Deep Learning
+torch>=2.1.0
+torchvision>=0.16.0
+timm>=0.9.0               # PyTorch Image Models: ResNet, EfficientNet, ViT, etc.
+
+# Data handling
+numpy>=1.24.0
+pandas>=2.0.0
+Pillow>=10.0.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Metrics & evaluation
+scikit-learn>=1.3.0
+
+# Grad-CAM visualization
+grad-cam>=1.4.8           # pytorch-grad-cam
+
+# Dataset download
+kaggle>=1.5.16
+
+# Utilities
+tqdm>=4.65.0
+
+# Notebooks
+jupyter>=1.0.0
+ipywidgets>=8.0.0

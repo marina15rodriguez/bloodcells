@@ -1,0 +1,31 @@
+# Dataset (large files, not tracked)
+data/
+!data/.gitkeep
+
+# Results (models and outputs)
+results/
+!results/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Kaggle credentials
+kaggle.json
+
+# OS
+.DS_Store
+Thumbs.db
