@@ -19,14 +19,8 @@ CLASSES = ["EOSINOPHIL", "LYMPHOCYTE", "MONOCYTE", "NEUTROPHIL"]
 
 def find_data_root(base_dir: Union[str, Path]) -> Path:
     """
-    Walk base_dir up to 2 levels deep looking for a directory that contains
-    both 'TRAIN' and 'TEST' subdirectories.
-
-    Handles all common Kaggle unzip variants:
-      data/TRAIN/
-      data/images/TRAIN/
-      data/dataset2-master/images/TRAIN/
-      data/blood-cells/dataset2-master/images/TRAIN/
+    Recursively search base_dir for a directory that contains both 'TRAIN'
+    and 'TEST' subdirectories. Handles any Kaggle unzip variant.
 
     Returns the resolved Path or raises FileNotFoundError.
     """
@@ -38,17 +32,10 @@ def find_data_root(base_dir: Union[str, Path]) -> Path:
     if has_train_test(base):
         return base
 
-    for child in base.iterdir():
-        if child.is_dir():
-            if has_train_test(child):
-                return child
-            for grandchild in child.iterdir():
-                if grandchild.is_dir():
-                    if has_train_test(grandchild):
-                        return grandchild
-                    for great_grandchild in grandchild.iterdir():
-                        if great_grandchild.is_dir() and has_train_test(great_grandchild):
-                            return great_grandchild
+    # Use rglob to find TRAIN at any depth, then check sibling TEST exists
+    for train_dir in sorted(base.rglob("TRAIN")):
+        if train_dir.is_dir() and has_train_test(train_dir.parent):
+            return train_dir.parent
 
     raise FileNotFoundError(
         f"Could not find TRAIN/ and TEST/ directories under '{base_dir}'. "
