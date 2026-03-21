@@ -43,8 +43,12 @@ def find_data_root(base_dir: Union[str, Path]) -> Path:
             if has_train_test(child):
                 return child
             for grandchild in child.iterdir():
-                if grandchild.is_dir() and has_train_test(grandchild):
-                    return grandchild
+                if grandchild.is_dir():
+                    if has_train_test(grandchild):
+                        return grandchild
+                    for great_grandchild in grandchild.iterdir():
+                        if great_grandchild.is_dir() and has_train_test(great_grandchild):
+                            return great_grandchild
 
     raise FileNotFoundError(
         f"Could not find TRAIN/ and TEST/ directories under '{base_dir}'. "
