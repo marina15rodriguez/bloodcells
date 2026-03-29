@@ -176,3 +176,21 @@ Limited. The model was trained and evaluated on a single dataset (Kaggle blood-c
 - **Monocyte/Neutrophil confusion** — the model struggles to distinguish these two classes (Monocyte recall = 0.76, Neutrophil precision = 0.71). Clinical use for these subtypes would require further improvement.
 - **Image quality variation** — all images are clean, well-centered microscopy crops. Performance on noisier or differently framed images is unknown.
 - **Rare cell morphologies** — abnormal cell appearances (e.g. in disease states like leukemia) were not present in training data. The model may misclassify pathological cells.
+
+## Potential Improvements
+
+**Data**
+- Collect more diverse examples of Monocyte and Neutrophil, the two weakest classes.
+- Apply stronger augmentation (elastic distortion, random erasing) for better robustness.
+
+**Training**
+- Increase warm-up epochs (e.g. 10) to give the head more time to stabilize before unfreezing.
+- Use label smoothing to prevent overconfidence and improve generalization.
+- Apply weighted loss to upweight Monocyte and Neutrophil during training.
+
+**Model**
+- Try a larger EfficientNet variant (B2 or B3) for more capacity.
+- Apply test-time augmentation (TTA) — average predictions over multiple augmented views of each test image for a free accuracy boost without retraining.
+
+**Evaluation**
+- Use k-fold cross-validation to obtain more reliable performance estimates and confidence intervals (addresses the uncertainty gap in Module 7b).
