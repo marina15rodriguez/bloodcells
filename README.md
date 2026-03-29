@@ -1,7 +1,7 @@
 # Blood Cell Classification
 
 Automated classification of white blood cells (WBC) using deep learning and computer vision techniques.
-.
+
 ## Overview
 
 This project tackles the multi-class image classification of white blood cells into 4 subtypes. Automated WBC classification has direct clinical applications in diagnosing blood-based diseases such as leukemia, anemia, and immune system disorders — tasks traditionally performed manually by trained hematologists.
