@@ -2,6 +2,8 @@ import argparse
 import random
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -13,6 +15,23 @@ def set_seed(seed=42):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def get_optimizer(model, lr, weight_decay, phase="warmup"):
+    if phase == "warmup":
+        params = [p for p in model.parameters() if p.requires_grad]
+        return torch.optim.AdamW(params, lr=lr, weight_decay=weight_decay)
+
+    classifier_ids = {id(p) for p in model.classifier.parameters()}
+    backbone_params = [p for p in model.parameters() if id(p) not in classifier_ids]
+    head_params = list(model.classifier.parameters())
+    return torch.optim.AdamW(
+        [
+            {"params": backbone_params, "lr": lr * 0.1},
+            {"params": head_params, "lr": lr},
+        ],
+        weight_decay=weight_decay,
+    )
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
@@ -33,6 +52,26 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
         total_loss += loss.item() * images.size(0)
         correct += (outputs.argmax(dim=1) == labels).sum().item()
         total += images.size(0)
+
+    return total_loss / total, correct / total
+
+
+def validate(model, loader, criterion, device):
+    model.eval()
+    total_loss = 0.0
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in loader:
+            images, labels = images.to(device), labels.to(device)
+
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+
+            total_loss += loss.item() * images.size(0)
+            correct += (outputs.argmax(dim=1) == labels).sum().item()
+            total += images.size(0)
 
     return total_loss / total, correct / total
 
@@ -161,40 +200,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-def get_optimizer(model, lr, weight_decay, phase="warmup"):
-    if phase == "warmup":
-        params = [p for p in model.parameters() if p.requires_grad]
-        return torch.optim.AdamW(params, lr=lr, weight_decay=weight_decay)
-
-    classifier_ids = {id(p) for p in model.classifier.parameters()}
-    backbone_params = [p for p in model.parameters() if id(p) not in classifier_ids]
-    head_params = list(model.classifier.parameters())
-    return torch.optim.AdamW(
-        [
-            {"params": backbone_params, "lr": lr * 0.1},
-            {"params": head_params, "lr": lr},
-        ],
-        weight_decay=weight_decay,
-    )
-
-
-def validate(model, loader, criterion, device):
-    model.eval()
-    total_loss = 0.0
-    correct = 0
-    total = 0
-
-    with torch.no_grad():
-        for images, labels in loader:
-            images, labels = images.to(device), labels.to(device)
-
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-
-            total_loss += loss.item() * images.size(0)
-            correct += (outputs.argmax(dim=1) == labels).sum().item()
-            total += images.size(0)
-
-    return total_loss / total, correct / total
