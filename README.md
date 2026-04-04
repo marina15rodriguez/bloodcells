@@ -50,6 +50,27 @@ bloodcells/
 └── README.md
 ```
 
+## Docker (recommended)
+
+The easiest way to run the API — no Python environment or dataset setup needed.
+
+**Pull and run:**
+```powershell
+docker pull marina15rodriguez/bloodcells:v1
+docker run -p 8000:8000 marina15rodriguez/bloodcells:v1
+```
+
+Then open `http://localhost:8000` in your browser. Upload a blood cell microscopy image (JPEG or PNG) and the model will classify it into one of the 4 WBC types with per-class confidence scores.
+
+The image includes the trained model checkpoint and all dependencies. It runs on CPU only (no GPU required).
+
+If port 8000 is already in use:
+```powershell
+docker run -p 8001:8000 marina15rodriguez/bloodcells:v1
+```
+
+---
+
 ## Getting Started
 
 ### Prerequisites
